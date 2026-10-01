@@ -1,0 +1,24 @@
+﻿{
+  "name": "buque-ar",
+  "version": "1.0.0",
+  "description": "Visor AR del buque ALMT BLANCO con WebXR y Three.js",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server -p 8000 -o",
+    "dev": "serve . -l 8000"
+  },
+  "keywords": [
+    "ar",
+    "webxr",
+    "threejs",
+    "gltf",
+    "augmented-reality",
+    "buque"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "serve": "^14.2.1"
+  }
+}
