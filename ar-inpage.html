@@ -1,455 +1,308 @@
 ﻿<!DOCTYPE html>
 <html lang="es">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Buque AR - ALMT BLANCO</title>
-  <meta name="theme-color" content="#000000" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: none;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    #webgl {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100dvh;
-      outline: none;
-    }
-
-    #ui {
-      position: fixed;
-      inset: 0;
-      z-index: 10;
-      pointer-events: none;
-    }
-
-    #startBtn {
-      position: absolute;
-      left: 50%;
-      bottom: clamp(24px, 6vw, 40px);
-      transform: translateX(-50%);
-      pointer-events: auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(8px, 2vw, 10px);
-      padding: clamp(14px, 3.5vw, 18px) clamp(24px, 6vw, 40px);
-      border-radius: 999px;
-      border: none;
-      background: #ffffff;
-      color: #111111;
-      font-size: clamp(14px, 3.5vw, 17px);
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      box-shadow: 0 20px 80px -30px rgba(255, 255, 255, 0.9);
-      transition: transform 0.15s ease, opacity 0.2s ease;
-      white-space: nowrap;
-    }
-
-    #startBtn.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #startBtn:active {
-      transform: translateX(-50%) scale(0.995);
-    }
-
-    #startBtn:disabled {
-      opacity: 0.45;
-    }
-
-    #status {
-      position: absolute;
-      top: clamp(16px, 4vw, 24px);
-      left: 50%;
-      transform: translateX(-50%);
-      padding: clamp(6px, 2vw, 8px) clamp(12px, 3.5vw, 16px);
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.75);
-      color: #ffffff;
-      font-size: clamp(11px, 2.8vw, 12px);
-      text-align: center;
-      backdrop-filter: blur(8px);
-      max-width: min(90vw, 92%);
-      white-space: nowrap;
-      transition: opacity 0.2s ease;
-    }
-
-    #status.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #reticle {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: clamp(64px, 16vw, 88px);
-      height: clamp(64px, 16vw, 88px);
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.95);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #reticle.visible {
-      opacity: 1;
-    }
-
-    #reticle::before,
-    #reticle::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: clamp(10px, 2.5vw, 12px);
-      height: 2px;
-      background: #ffffff;
-      transform: translate(-50%, -50%);
-    }
-
-    #reticle::after {
-      transform: translate(-50%, -50%) rotate(90deg);
-    }
-
-    .dot {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: clamp(6px, 1.5vw, 8px);
-      height: clamp(6px, 1.5vw, 8px);
-      border-radius: 50%;
-      background: #ffffff;
-      transform: translate(-50%, -50%);
-      animation: pulse 1.6s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%,
-      100% {
-        transform: translate(-50%, -50%) scale(0.9);
-        opacity: 0.95;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Buque AR - Cámara + 3D</title>
+    <meta name="theme-color" content="#000000" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: none;
       }
-
-      50% {
-        transform: translate(-50%, -50%) scale(1.2);
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+      canvas {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100dvh;
+      }
+      #ui {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        pointer-events: none;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      #btn {
+        position: absolute;
+        left: 50%;
+        bottom: clamp(20px, 5vw, 40px);
+        transform: translateX(-50%);
+        pointer-events: auto;
+        padding: clamp(12px, 3vw, 16px) clamp(22px, 5.5vw, 36px);
+        border: 0;
+        border-radius: 999px;
+        background: #fff;
+        color: #111;
+        font-size: clamp(14px, 3.5vw, 16px);
+        font-weight: 600;
+        box-shadow: 0 20px 80px -30px #fff;
+        transition: transform 0.1s ease;
+      }
+      #btn:active {
+        transform: translateX(-50%) scale(0.995);
+      }
+      #btn.hide {
+        display: none;
+      }
+      #btn[disabled] {
+        opacity: 0.4;
+      }
+      #ret {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: clamp(58px, 14vw, 78px);
+        height: clamp(58px, 14vw, 78px);
+        transform: translate(-50%, -50%);
+        border: 2px solid rgba(255, 255, 255, 0.98);
+        border-radius: 50%;
+        opacity: 0;
+        pointer-events: none;
+      }
+      #ret.on {
         opacity: 1;
       }
-    }
-
-    #hint {
-      position: absolute;
-      bottom: clamp(78px, 15vw, 116px);
-      left: 50%;
-      transform: translateX(-50%);
-      padding: clamp(6px, 2vw, 8px) clamp(10px, 3vw, 14px);
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.75);
-      color: #ffffff;
-      font-size: clamp(10px, 2.5vw, 12px);
-      text-align: center;
-      backdrop-filter: blur(8px);
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-
-    #hint.visible {
-      opacity: 1;
-    }
-
-    #loader {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(14px, 3.5vw, 18px);
-      background: #000000;
-      z-index: 20;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-
-    #loader.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .spinner {
-      width: clamp(46px, 9vw, 60px);
-      height: clamp(46px, 9vw, 60px);
-      border-radius: 50%;
-      border: 3px solid rgba(255, 255, 255, 0.15);
-      border-top-color: #ffffff;
-      animation: spin 0.9s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
+      #ret:before,
+      #ret:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: clamp(8px, 2vw, 10px);
+        height: 2px;
+        background: #fff;
+        transform: translate(-50%, -50%);
       }
-    }
-
-    #loaderText {
-      color: #ffffff;
-      font-size: clamp(13px, 3vw, 14px);
-      padding: 0 clamp(20px, 5vw, 32px);
-      text-align: center;
-    }
-
-    #backBtn {
-      position: absolute;
-      top: clamp(10px, 2.5vw, 14px);
-      left: clamp(10px, 2.5vw, 14px);
-      pointer-events: auto;
-      padding: clamp(6px, 2vw, 8px) clamp(10px, 2.5vw, 12px);
-      border-radius: 999px;
-      border: none;
-      background: rgba(0, 0, 0, 0.72);
-      color: #ffffff;
-      font-size: clamp(11px, 2.5vw, 12px);
-      backdrop-filter: blur(8px);
-    }
-
-    #backBtn.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-  </style>
-</head>
-
-<body>
-  <canvas id="webgl"></canvas>
-
-  <div id="ui">
-    <button id="backBtn">← Volver</button>
-    <div id="status" class="hidden"></div>
-    <div id="reticle">
-      <div class="dot"></div>
+      #ret:after {
+        transform: translate(-50%, -50%) rotate(90deg);
+      }
+      #d {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: clamp(5px, 1.2vw, 7px);
+        height: clamp(5px, 1.2vw, 7px);
+        border-radius: 50%;
+        background: #fff;
+        transform: translate(-50%, -50%);
+        animation: p 1.4s ease-in-out infinite;
+      }
+      @keyframes p {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) scale(0.9);
+          opacity: 0.98;
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.16);
+          opacity: 1;
+        }
+      }
+      #back {
+        position: absolute;
+        top: clamp(10px, 2.5vw, 14px);
+        left: clamp(10px, 2.5vw, 14px);
+        pointer-events: auto;
+        padding: clamp(5px, 2vw, 7px) clamp(9px, 2.2vw, 11px);
+        border: 0;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.72);
+        color: #fff;
+        font-size: clamp(11px, 2.5vw, 12px);
+        backdrop-filter: blur(6px);
+      }
+      #hint {
+        position: absolute;
+        bottom: clamp(74px, 14vw, 110px);
+        left: 50%;
+        transform: translateX(-50%);
+        padding: clamp(5px, 2vw, 7px) clamp(9px, 2.5vw, 12px);
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.72);
+        color: #fff;
+        font-size: clamp(10px, 2.4vw, 11px);
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+      }
+      #hint.show {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div id="ui">
+      <button id="back">← Volver</button>
+      <div id="ret"><div id="d"></div></div>
+      <div id="hint">Mueve el móvil para detectar superficies • Toca para colocar</div>
+      <button id="btn" class="hide">Ver en AR</button>
     </div>
-    <div id="hint">Mueve el dispositivo para detectar superficies • Toca para colocar el buque</div>
-    <button id="startBtn" class="hidden">Ver en AR</button>
-  </div>
-
-  <div id="loader">
-    <div class="spinner"></div>
-    <div id="loaderText">Cargando modelo...</div>
-  </div>
-
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-      }
-    }
-  </script>
-
-  <script type="module">
-    import * as THREE from "three";
-    import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-
-    const canvas = document.getElementById("webgl");
-    const loaderEl = document.getElementById("loader");
-    const loaderText = document.getElementById("loaderText");
-    const startBtn = document.getElementById("startBtn");
-    const statusEl = document.getElementById("status");
-    const reticleEl = document.getElementById("reticle");
-    const hintEl = document.getElementById("hint");
-    const backBtn = document.getElementById("backBtn");
-
-    let scene, camera, renderer;
-    let model, reticle;
-    let hitTestSource = null;
-    let hitTestRequested = false;
-    let inAR = false;
-    let placed = false;
-    let xrSession = null;
-
-    const show = (el) => el.classList.remove("hidden");
-    const hide = (el) => el.classList.add("hidden");
-    const showStatus = (t, ms = 2500) => {
-      statusEl.textContent = t;
-      statusEl.classList.remove("hidden");
-      clearTimeout(showStatus._t);
-      showStatus._t = setTimeout(() => statusEl.classList.add("hidden"), ms);
-    };
-
-    backBtn.onclick = () => (location.href = "./index.html");
-
-    const hasXR = () => typeof navigator !== "undefined" && navigator.xr;
-
-    async function init() {
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.01, 25);
-
-      scene.add(new THREE.HemisphereLight(0xffffff, 0xbbbbff, 3));
-      const d = new THREE.DirectionalLight(0xffffff, 1.5);
-      d.position.set(1, 3, 2);
-      scene.add(d);
-
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-      renderer.setSize(innerWidth, innerHeight);
-      renderer.xr.enabled = true;
-      renderer.xr.setReferenceSpaceType("local");
-
-      const g = new THREE.RingGeometry(0.13, 0.19, 32).rotateX(-Math.PI / 2);
-      const m = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.98 });
-      reticle = new THREE.Mesh(g, m);
-      reticle.matrixAutoUpdate = false;
-      reticle.visible = false;
-      scene.add(reticle);
-
-      new GLTFLoader().load(
-        "./ALMT_BLANCO.glb",
-        (gltf) => {
-          model = gltf.scene;
-          model.visible = false;
-          model.traverse((c) => {
-            if (c.isMesh && c.material) {
-              c.castShadow = c.receiveShadow = true;
-              c.material.metalness = 0.05;
-              c.material.roughness = 0.85;
-            }
-          });
-          scene.add(model);
-          hide(loaderEl);
-          if (hasXR()) {
-            show(startBtn);
-          } else {
-            startBtn.textContent = "AR no disponible";
-            startBtn.disabled = true;
-            show(startBtn);
-            showStatus("WebXR no está disponible en este navegador", 3500);
-          }
-          show(backBtn);
-        },
-        (xhr) => {
-          if (xhr.total > 0) {
-            loaderText.textContent = `Cargando... ${Math.round((xhr.loaded / xhr.total) * 100)}%`;
-          }
-        },
-        () => (loaderText.textContent = "Error al cargar el modelo")
-      );
-
-      renderer.xr.addEventListener("sessionstart", () => {
-        inAR = true;
-        placed = false;
-        if (model) model.visible = false;
-        reticle.visible = false;
-        hitTestRequested = false;
-        hitTestSource = null;
-        hide(startBtn);
-        hide(backBtn);
-        reticleEl.classList.add("visible");
-        hintEl.classList.add("visible");
-      });
-
-      renderer.xr.addEventListener("sessionend", () => {
-        inAR = false;
-        xrSession = null;
-        reticleEl.classList.remove("visible");
-        hintEl.classList.remove("visible");
-        if (model) model.visible = false;
-        reticle.visible = false;
-        if (hasXR()) show(startBtn);
-        show(backBtn);
-      });
-
-      canvas.addEventListener("click", () => {
-        if (inAR && reticle.visible && model && !placed) {
-          model.position.setFromMatrixPosition(reticle.matrix);
-          model.quaternion.setFromRotationMatrix(reticle.matrix);
-          model.scale.set(0.08, 0.08, 0.08);
-          model.visible = true;
-          placed = true;
-          reticle.visible = false;
-          reticleEl.classList.remove("visible");
-          hintEl.classList.remove("visible");
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
-      });
-
-      addEventListener("resize", () => {
-        camera.aspect = innerWidth / innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(innerWidth, innerHeight);
-      });
-
-      renderer.setAnimationLoop(render);
-    }
-
-    async function startAR() {
-      if (xrSession || !hasXR()) return;
-      try {
-        xrSession = await navigator.xr.requestSession("immersive-ar", {
-          requiredFeatures: ["hit-test"],
-        });
-        renderer.xr.setSession(xrSession);
-      } catch (e) {
-        showStatus("AR no disponible aquí. Usa la opción Universal", 2800);
       }
-    }
-    startBtn.onclick = startAR;
+    </script>
+    <script type="module">
+      import * as THREE from "three";
+      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-    function render(_, frame) {
-      if (inAR && frame && !placed) {
-        const ref = renderer.xr.getReferenceSpace();
-        const s = renderer.xr.getSession();
-        if (ref && s) {
-          if (!hitTestRequested) {
-            s.requestReferenceSpace("viewer").then((vs) =>
-              s.requestHitTestSource({ space: vs }).then((src) => (hitTestSource = src))
-            );
-            s.addEventListener("end", () => {
-              hitTestRequested = false;
-              hitTestSource = null;
-            });
-            hitTestRequested = true;
-          }
-          if (hitTestSource) {
-            const r = frame.getHitTestResults(hitTestSource);
-            if (r.length > 0) {
-              const p = r[0].getPose(ref);
-              if (p) {
-                reticle.visible = true;
-                reticle.matrix.fromArray(p.transform.matrix);
+      const c = document.getElementById("c"),
+        btn = document.getElementById("btn"),
+        retEl = document.getElementById("ret"),
+        back = document.getElementById("back"),
+        hint = document.getElementById("hint");
+      let scene, cam, rend, mod, r, hsrc = null, hreq = false, ar = false, placed = false, sess = null;
+
+      back.onclick = () => (location.href = "./index.html");
+
+      async function init() {
+        scene = new THREE.Scene();
+        cam = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.01, 18);
+        scene.add(new THREE.HemisphereLight(0xffffff, 0xbbbbff, 3));
+        const dl = new THREE.DirectionalLight(0xffffff, 1.4);
+        dl.position.set(1, 3, 2);
+        scene.add(dl);
+
+        rend = new THREE.WebGLRenderer({ canvas: c, alpha: true, antialias: true });
+        rend.setPixelRatio(Math.min(devicePixelRatio, 2));
+        rend.setSize(innerWidth, innerHeight);
+        rend.xr.enabled = true;
+        rend.xr.setReferenceSpaceType("local");
+
+        const g = new THREE.RingGeometry(0.12, 0.18, 32).rotateX(-Math.PI / 2);
+        r = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        r.matrixAutoUpdate = false;
+        r.visible = false;
+        scene.add(r);
+
+        new GLTFLoader().load(
+          "./ALMT_BLANCO.glb",
+          (gl) => {
+            mod = gl.scene;
+            mod.visible = false;
+            mod.traverse((ch) => {
+              if (ch.isMesh && ch.material) {
+                ch.castShadow = ch.receiveShadow = true;
+                ch.material.metalness = 0.05;
+                ch.material.roughness = 0.85;
               }
+            });
+            scene.add(mod);
+            if (navigator.xr) {
+              navigator.xr.isSessionSupported("immersive-ar").then((ok) => {
+                if (ok) btn.classList.remove("hide");
+              });
             } else {
-              reticle.visible = false;
+              btn.disabled = true;
+              btn.textContent = "AR no disponible";
+              btn.classList.remove("hide");
+            }
+          },
+          () => {},
+          () => {}
+        );
+
+        rend.xr.addEventListener("sessionstart", () => {
+          ar = true;
+          placed = false;
+          if (mod) mod.visible = false;
+          r.visible = false;
+          hsrc = null;
+          hreq = false;
+          btn.classList.add("hide");
+          back.classList.add("hide");
+          retEl.classList.add("on");
+          hint.classList.add("show");
+        });
+        rend.xr.addEventListener("sessionend", () => {
+          ar = false;
+          sess = null;
+          retEl.classList.remove("on");
+          hint.classList.remove("show");
+          r.visible = false;
+          if (mod) mod.visible = false;
+          if (navigator.xr) btn.classList.remove("hide");
+          back.classList.remove("hide");
+        });
+
+        c.addEventListener("click", () => {
+          if (ar && r.visible && mod && !placed) {
+            mod.position.setFromMatrixPosition(r.matrix);
+            mod.quaternion.setFromRotationMatrix(r.matrix);
+            mod.scale.set(0.08, 0.08, 0.08);
+            mod.visible = true;
+            placed = true;
+            r.visible = false;
+            retEl.classList.remove("on");
+            hint.classList.remove("show");
+          }
+        });
+        addEventListener("resize", () => {
+          cam.aspect = innerWidth / innerHeight;
+          cam.updateProjectionMatrix();
+          rend.setSize(innerWidth, innerHeight);
+        });
+        rend.setAnimationLoop(render);
+      }
+
+      btn.onclick = async () => {
+        if (sess) return;
+        try {
+          sess = await navigator.xr.requestSession("immersive-ar", {
+            requiredFeatures: ["hit-test"],
+          });
+          rend.xr.setSession(sess);
+        } catch (e) {}
+      };
+
+      function render(_, frame) {
+        if (ar && frame && !placed) {
+          const ref = rend.xr.getReferenceSpace();
+          const s = rend.xr.getSession();
+          if (ref && s) {
+            if (!hreq) {
+              s.requestReferenceSpace("viewer")
+                .then((vs) => s.requestHitTestSource({ space: vs }).then((src) => (hsrc = src)));
+              s.addEventListener("end", () => {
+                hreq = false;
+                hsrc = null;
+              });
+              hreq = true;
+            }
+            if (hsrc) {
+              const res = frame.getHitTestResults(hsrc);
+              if (res.length > 0) {
+                const p = res[0].getPose(ref);
+                if (p) {
+                  r.visible = true;
+                  r.matrix.fromArray(p.transform.matrix);
+                }
+              } else {
+                r.visible = false;
+              }
             }
           }
         }
+        rend.render(scene, cam);
       }
-      renderer.render(scene, camera);
-    }
-
-    init();
-  </script>
-</body>
-
+      init();
+    </script>
+  </body>
 </html>
