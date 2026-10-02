@@ -1,60 +1,39 @@
 ﻿# Buque AR - ALMT BLANCO
 
-Visor del buque en **Realidad Aumentada universal**. Funciona directamente desde el navegador, **sin instalar nada**. Solo necesitas escanear un QR y abrir la URL.
+El proyecto mantiene **ambas experiencias** de Realidad Aumentada, sin perder la que ya funcionaba perfectamente.
 
-## URL para QR
+## URLs
 
-La página está lista para GitHub Pages:
+Con el selector en `index.html`, tienes estas rutas:
 
-**https://cvierab.github.io/buque-ar/**
+| Ruta | Descripción |
+|---|---|
+| **`/`** o **index.html** | Pantalla de selección (elige experiencia) |
+| **`/universal.html`** | **Experiencia Universal (RECOMENDADA)** - Scene Viewer (Android) / Quick Look (iOS). Funciona en TODOS los dispositivos. Sin instalar nada. |
+| **`/ar-inpage.html`** | **AR en Página** - Cámara + modelo 3D dentro del mismo navegador (como el ejemplo de Snap Lens). Solo funciona donde WebXR AR esté soportado (mejor Android Chrome/Edge). |
 
-Genera un QR con esa URL ([QRCode Monkey](https://qrcode-monkey.com/es), [QR Code Generator](https://es.qr-code-generator.com/), etc.) y escanéalo desde cualquier móvil.
+## URL para QR (pública)
 
-## Compatibilidad (todos los dispositivos)
+Con GitHub Pages activo: **https://cvierab.github.io/buque-ar/**
 
-| Dispositivo | Experiencia AR | Notas |
-|---|---|---|
-| **iPhone / iPad (iOS 13+)** | **AR Quick Look** (nativo) | Se abre con la app nativa de iOS. No requiere instalación. |
-| **Android 7.0+** | **Scene Viewer / Google AR** | Usa Google Scene Viewer si está disponible. Muy estable y sin instalación. |
-| **Android (Chrome/Edge)** | **WebXR** | Fallback automático si Scene Viewer no está disponible. |
-| **Ordenador/PC/Mac** | **Visor 3D** | Solo vista interactiva (sin AR). |
-| **Tablets** | **3D o AR** | Detecta automáticamente lo mejor disponible. |
+Esta URL te llevará directamente a la **pantalla de selección**. Ahí puedes elegir la experiencia.
 
-**Importante:** No pide instalar apps. Funciona con solo abrir el enlace.
+Si quieres que el QR vaya **directamente** a una experiencia concreta (sin selector):
 
-## ¿Cómo usarlo?
+- Universal (más estable, recomendado para QR público): `https://cvierab.github.io/buque-ar/universal.html`
+- In-page (cámara + 3D dentro de web): `https://cvierab.github.io/buque-ar/ar-inpage.html`
 
-1. Escanea el QR con la cámara de tu móvil
-2. Toca el enlace para abrirlo en el navegador
-3. Pulsa **"Ver en Realidad Aumentada"**
-4. El dispositivo abrirá la experiencia AR nativa (Quick Look en iOS / Scene Viewer en Android)
-5. Mueve el móvil para detectar superficies y coloca el buque
-6. Puedes mover, rotar y ampliar con gestos naturales
+**Mi recomendación para QR:** Usa `universal.html` directamente. Es la que te funciona perfecta en todos los dispositivos.
 
-## Características
+## ¿Cuándo usar cada una?
 
-- **100% compatible multi-plataforma**: Gracias a [model-viewer](https://modelviewer.dev/), elige automáticamente el mejor modo AR para cada dispositivo.
-- **Cero instalación**: Solo web. No solicita permisos extra innecesarios.
-- **Carga optimizada**: Se carga rápido incluso desde móvil con datos.
-- **Interfaz limpia y minimalista**: Pensada para mostrar al escanear QR.
-- **Auto-rotación**: Vista previa 3D atractiva mientras carga/visualiza.
+- **Universal**: QR público, eventos, mostrar a cualquier persona (iOS + Android + todos). **Esta es la segura**.
+- **In-page**: Quieres el efecto "solo cámara + 3D" dentro de la web (sin saltar a otra app), pruebas en Android moderno.
 
 ## Activar GitHub Pages
 
-Para que el QR funcione con la URL pública:
+1. Ir a [Settings > Pages](https://github.com/Cvierab/buque-ar/settings/pages)
+2. Source: `Deploy from a branch` → Branch: `main` → `/ (root)`
+3. Guardar (espera 1-2 minutos)
 
-1. Ve a [Settings > Pages](https://github.com/Cvierab/buque-ar/settings/pages) del repositorio
-2. En **Source** selecciona `Deploy from a branch`
-3. Branch: `main` / Folder: `/ (root)`
-4. Guarda. La URL `https://cvierab.github.io/buque-ar/` estará activa en ~1-2 minutos
-
-## Archivos
-
-- `index.html` - Página con model-viewer (universal, sin dependencias locales)
-- `ALMT_BLANCO.glb` - Modelo 3D
-- `main.js` (versión anterior, opcional) - No se usa en esta versión universal
-- `README.md` - Instrucciones
-
-## Tecnologías
-
-- [@google/model-viewer](https://modelviewer.dev/) v4.0.0 - Visor 3D + AR universal
+Una vez desplegado, ambas URLS funcionarán.
