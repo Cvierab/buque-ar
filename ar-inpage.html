@@ -76,6 +76,10 @@
       transform: translateX(-50%) scale(0.995);
     }
 
+    #startBtn:disabled {
+      opacity: 0.5;
+    }
+
     #status {
       position: absolute;
       top: clamp(20px, 5vw, 32px);
@@ -83,7 +87,7 @@
       transform: translateX(-50%);
       padding: clamp(6px, 2vw, 10px) clamp(14px, 4vw, 18px);
       border-radius: 999px;
-      background: rgba(0, 0, 0, 0.72);
+      background: rgba(0, 0, 0, 0.8);
       color: #fff;
       font-size: clamp(11px, 2.8vw, 13px);
       text-align: center;
@@ -91,23 +95,13 @@
       box-shadow: 0 10px 60px -30px rgba(0, 0, 0, 0.9);
       transition: opacity 0.3s ease, transform 0.3s ease;
       white-space: nowrap;
-      max-width: min(92vw, 90%);
-      overflow: hidden;
-      text-overflow: ellipsis;
+      max-width: min(92vw, 92%);
     }
 
     #status.hidden {
       opacity: 0;
       transform: translateX(-50%) translateY(-6px);
       pointer-events: none;
-    }
-
-    #status.info {
-      background: rgba(0, 0, 0, 0.72);
-    }
-
-    #status.success {
-      background: rgba(34, 197, 94, 0.92);
     }
 
     #reticle {
@@ -118,9 +112,7 @@
       height: clamp(70px, 18vw, 96px);
       transform: translate(-50%, -50%);
       border-radius: 50%;
-      border: clamp(2px, 0.8vw, 2.5px) solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 0 0 clamp(4px, 1.5vw, 6px) rgba(255, 255, 255, 0.15),
-        0 0 80px -30px rgba(255, 255, 255, 0.9);
+      border: clamp(2px, 0.8vw, 2.5px) solid rgba(255, 255, 255, 0.95);
       opacity: 0;
       transition: opacity 0.25s ease;
       pointer-events: none;
@@ -134,7 +126,7 @@
       left: 50%;
       width: clamp(10px, 3vw, 14px);
       height: clamp(2px, 0.8vw, 2.5px);
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.98);
       transform: translate(-50%, -50%);
     }
 
@@ -146,10 +138,6 @@
       opacity: 1;
     }
 
-    #reticle.hidden {
-      opacity: 0;
-    }
-
     .dot {
       position: absolute;
       top: 50%;
@@ -157,22 +145,21 @@
       width: clamp(6px, 1.5vw, 8px);
       height: clamp(6px, 1.5vw, 8px);
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.98);
+      background: #fff;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 0 clamp(3px, 1vw, 4px) rgba(255, 255, 255, 0.25);
       animation: pulse 1.8s ease-in-out infinite;
     }
 
     @keyframes pulse {
       0%,
       100% {
-        transform: translate(-50%, -50%) scale(0.9);
         opacity: 0.9;
+        transform: translate(-50%, -50%) scale(0.9);
       }
 
       50% {
-        transform: translate(-50%, -50%) scale(1.15);
         opacity: 1;
+        transform: translate(-50%, -50%) scale(1.15);
       }
     }
 
@@ -184,7 +171,7 @@
       padding: clamp(6px, 2vw, 8px) clamp(12px, 3.5vw, 16px);
       border-radius: 999px;
       background: rgba(0, 0, 0, 0.72);
-      color: rgba(255, 255, 255, 0.96);
+      color: #fff;
       font-size: clamp(10px, 2.5vw, 12px);
       text-align: center;
       backdrop-filter: blur(10px) saturate(140%);
@@ -199,10 +186,6 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    #hint.hidden {
-      opacity: 0;
-    }
-
     #loader {
       position: fixed;
       inset: 0;
@@ -213,7 +196,7 @@
       gap: clamp(16px, 4vw, 20px);
       background: #000;
       z-index: 20;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
     }
 
     #loader.hidden {
@@ -227,7 +210,7 @@
       height: clamp(48px, 10vw, 64px);
       border-radius: 50%;
       border: clamp(3px, 0.8vw, 4px) solid rgba(255, 255, 255, 0.15);
-      border-top-color: rgba(255, 255, 255, 0.98);
+      border-top-color: #fff;
       animation: spin 0.9s linear infinite;
     }
 
@@ -238,10 +221,35 @@
     }
 
     #loaderText {
-      color: rgba(255, 255, 255, 0.96);
+      color: #fff;
       font-size: clamp(13px, 3.2vw, 15px);
       text-align: center;
       padding: 0 clamp(20px, 5vw, 32px);
+    }
+
+    #backBtn {
+      position: absolute;
+      top: clamp(12px, 3vw, 16px);
+      left: clamp(12px, 3vw, 16px);
+      pointer-events: auto;
+      padding: clamp(6px, 2vw, 8px) clamp(10px, 2.5vw, 12px);
+      border-radius: 999px;
+      border: none;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      font-size: clamp(11px, 2.5vw, 12px);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 60px -30px rgba(0, 0, 0, 0.9);
+      transition: opacity 0.3s ease, transform 0.2s ease;
+    }
+
+    #backBtn.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #backBtn:active {
+      transform: scale(0.98);
     }
   </style>
 </head>
@@ -250,18 +258,13 @@
   <canvas id="webgl"></canvas>
 
   <div id="ui">
-    <div id="status" class="info hidden"></div>
+    <button id="backBtn" onclick="window.location.href='./index.html'">← Volver</button>
+    <div id="status" class="hidden"></div>
     <div id="reticle">
       <div class="dot"></div>
     </div>
     <div id="hint">Mueve el dispositivo para detectar superficies • Toca para colocar el buque</div>
-    <button id="startBtn" class="hidden">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink: 0">
-        <path
-          d="M3 4.5A1.5 1.5 0 014.5 3h3A1.5 1.5 0 019 4.5V5h6v-.5A1.5 1.5 0 0116.5 3h3A1.5 1.5 0 0121 4.5v3A1.5 1.5 0 0119.5 9H19v6h.5a1.5 1.5 0 011.5 1.5v3a1.5 1.5 0 01-1.5 1.5h-3a1.5 1.5 0 01-1.5-1.5V19H9v.5A1.5 1.5 0 017.5 21h-3A1.5 1.5 0 013 19.5v-3A1.5 1.5 0 014.5 15H5V9h-.5A1.5 1.5 0 013 7.5v-3zM5 7v2h2V7H5zm12 0v2h2V7h-2zM7 5H5v2h2V5zm10 0h-2v2h2V5zM5 15v2h2v-2H5zm12 0v2h2v-2h-2zm-8-4h6v6H9V9zm2 2v2h2v-2h-2z" />
-      </svg>
-      Comenzar en AR
-    </button>
+    <button id="startBtn" class="hidden">Comenzar en AR</button>
   </div>
 
   <div id="loader">
@@ -289,6 +292,7 @@
     const statusEl = document.getElementById("status");
     const reticleEl = document.getElementById("reticle");
     const hintEl = document.getElementById("hint");
+    const backBtn = document.getElementById("backBtn");
 
     let scene, camera, renderer;
     let model = null;
@@ -297,201 +301,184 @@
     let hitTestSourceRequested = false;
     let isAR = false;
     let modelPlaced = false;
+    let session = null;
 
-    const showStatus = (text, type = "info", timeout = 2600) => {
+    const showStatus = (text, timeout = 2400) => {
       statusEl.textContent = text;
-      statusEl.className = `info ${type}`;
       statusEl.classList.remove("hidden");
-      clearTimeout(showStatus._t);
-      showStatus._t = setTimeout(() => statusEl.classList.add("hidden"), timeout);
+      clearTimeout(showStatus.t);
+      showStatus.t = setTimeout(() => statusEl.classList.add("hidden"), timeout);
     };
 
-    const init = () => {
-      scene = new THREE.Scene();
+    const checkSupport = async () => {
+      if (!navigator.xr) return false;
+      try {
+        const supported = await navigator.xr.isSessionSupported("immersive-ar");
+        return supported;
+      } catch (e) {
+        return false;
+      }
+    };
 
+    const init = async () => {
+      scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(
         70,
-        window.innerWidth / window.innerHeight,
+        innerWidth / innerHeight,
         0.01,
-        40
+        30
       );
 
-      const hemi = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 3);
-      scene.add(hemi);
+      scene.add(new THREE.HemisphereLight(0xffffff, 0xbbbbff, 3));
+      const dl = new THREE.DirectionalLight(0xffffff, 1.6);
+      dl.position.set(1, 3, 2);
+      scene.add(dl);
 
-      const dir = new THREE.DirectionalLight(0xffffff, 1.8);
-      dir.position.set(1, 3, 2);
-      scene.add(dir);
-
-      renderer = new THREE.WebGLRenderer({
-        canvas,
-        antialias: true,
-        alpha: true,
-      });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setSize(innerWidth, innerHeight);
       renderer.xr.enabled = true;
-      renderer.useLegacyLights = false;
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.1;
+      renderer.xr.setReferenceSpaceType("local");
 
-      const reticleGeo = new THREE.RingGeometry(0.14, 0.2, 32).rotateX(
-        -Math.PI / 2
-      );
-      const reticleMat = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.95,
-      });
-      reticle = new THREE.Mesh(reticleGeo, reticleMat);
+      const rg = new THREE.RingGeometry(0.14, 0.2, 32).rotateX(-Math.PI / 2);
+      const rm = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 });
+      reticle = new THREE.Mesh(rg, rm);
       reticle.matrixAutoUpdate = false;
       reticle.visible = false;
       scene.add(reticle);
 
-      const loader = new GLTFLoader();
-      loader.load(
+      const gltfLoader = new GLTFLoader();
+      gltfLoader.load(
         "./ALMT_BLANCO.glb",
         (gltf) => {
           model = gltf.scene;
           model.visible = false;
-          model.traverse((child) => {
-            if (child.isMesh) {
-              child.castShadow = true;
-              child.receiveShadow = true;
-              if (child.material) {
-                child.material.metalness = 0.05;
-                child.material.roughness = 0.85;
+          model.traverse((c) => {
+            if (c.isMesh) {
+              c.castShadow = c.receiveShadow = true;
+              if (c.material) {
+                c.material.metalness = 0.05;
+                c.material.roughness = 0.85;
               }
             }
           });
           scene.add(model);
           loaderEl.classList.add("hidden");
           startBtn.classList.remove("hidden");
-          showStatus("Modelo listo. Pulsa para iniciar AR", "info", 1800);
+          backBtn.classList.remove("hidden");
         },
         (xhr) => {
           if (xhr.total > 0) {
-            const p = Math.round((xhr.loaded / xhr.total) * 100);
-            loaderText.textContent = `Cargando modelo... ${p}%`;
+            loaderText.textContent = `Cargando modelo... ${Math.round((xhr.loaded / xhr.total) * 100)}%`;
           }
         },
-        (err) => {
-          console.error(err);
-          loaderText.textContent =
-            "Error al cargar ALMT_BLANCO.glb. Asegúrate de que esté en la carpeta.";
+        () => {
+          loaderText.textContent = "Error al cargar el modelo";
         }
       );
 
-      renderer.xr.addEventListener("sessionstart", onSessionStart);
-      renderer.xr.addEventListener("sessionend", onSessionEnd);
+      renderer.xr.addEventListener("sessionstart", () => {
+        isAR = true;
+        modelPlaced = false;
+        if (model) model.visible = false;
+        reticle.visible = false;
+        hitTestSourceRequested = false;
+        hitTestSource = null;
+        startBtn.classList.add("hidden");
+        backBtn.classList.add("hidden");
+        reticleEl.classList.add("visible");
+        hintEl.classList.add("visible");
+        showStatus("Mueve el dispositivo para detectar superficies", 3200);
+      });
+
+      renderer.xr.addEventListener("sessionend", () => {
+        isAR = false;
+        session = null;
+        reticleEl.classList.remove("visible");
+        hintEl.classList.remove("visible");
+        if (model) model.visible = false;
+        reticle.visible = false;
+        startBtn.classList.remove("hidden");
+        backBtn.classList.remove("hidden");
+      });
 
       canvas.addEventListener("click", onSelect, { passive: true });
-      window.addEventListener("resize", onResize);
+      addEventListener("resize", onResize);
+
+      const supported = await checkSupport();
+      if (!supported) {
+        startBtn.textContent = "AR no disponible en este navegador";
+        startBtn.disabled = true;
+        startBtn.classList.remove("hidden");
+        backBtn.classList.remove("hidden");
+        showStatus("WebXR AR no está soportado en este dispositivo/navegador", 4000);
+      }
 
       renderer.setAnimationLoop(render);
     };
 
-    const onSessionStart = () => {
-      isAR = true;
-      modelPlaced = false;
-      if (model) model.visible = false;
-      reticle.visible = false;
-      hitTestSourceRequested = false;
-      hitTestSource = null;
-      startBtn.classList.add("hidden");
-      reticleEl.classList.add("visible");
-      hintEl.classList.add("visible");
-      showStatus("Busca una superficie plana...", "info", 3200);
-    };
-
-    const onSessionEnd = () => {
-      isAR = false;
-      reticleEl.classList.remove("visible");
-      hintEl.classList.remove("visible");
-      if (model) model.visible = false;
-      reticle.visible = false;
-      startBtn.classList.remove("hidden");
-      showStatus("Sesión AR finalizada", "info", 1600);
-    };
-
-    const onSelect = () => {
-      if (isAR && reticle.visible && model && !modelPlaced) {
-        model.position.setFromMatrixPosition(reticle.matrix);
-        model.quaternion.setFromRotationMatrix(reticle.matrix);
-        const scale = 0.08;
-        model.scale.set(scale, scale, scale);
-        model.visible = true;
-        modelPlaced = true;
-        reticle.visible = false;
-        reticleEl.classList.remove("visible");
-        hintEl.classList.remove("visible");
-        showStatus("¡Buque colocado!", "success", 1800);
-      }
-    };
-
-    const onResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-
     const startAR = async () => {
-      if (!navigator.xr) {
-        showStatus("Tu navegador no soporta WebXR", "info", 2400);
-        return;
-      }
+      if (session) return;
       try {
-        const session = await navigator.xr.requestSession("immersive-ar", {
+        session = await navigator.xr.requestSession("immersive-ar", {
           requiredFeatures: ["hit-test"],
-          optionalFeatures: ["dom-overlay"],
-          domOverlay: { root: document.getElementById("ui") },
         });
-        renderer.xr.setReferenceSpaceType("local");
         renderer.xr.setSession(session);
-      } catch (e) {
-        console.error(e);
-        showStatus("No se pudo iniciar AR en esta página", "info", 2800);
+      } catch (err) {
+        console.warn(err);
+        showStatus("No se pudo iniciar AR. Prueba en Chrome/Edge (Android) o usa la experiencia Universal", 3200);
       }
     };
 
     startBtn.addEventListener("click", startAR);
 
-    const render = (timestamp, frame) => {
-      if (isAR && frame) {
+    const onSelect = () => {
+      if (isAR && reticle.visible && model && !modelPlaced) {
+        model.position.setFromMatrixPosition(reticle.matrix);
+        model.quaternion.setFromRotationMatrix(reticle.matrix);
+        model.scale.set(0.08, 0.08, 0.08);
+        model.visible = true;
+        modelPlaced = true;
+        reticle.visible = false;
+        reticleEl.classList.remove("visible");
+        hintEl.classList.remove("visible");
+        showStatus("¡Buque colocado!", 1800);
+      }
+    };
+
+    const onResize = () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    };
+
+    const render = (t, frame) => {
+      if (isAR && frame && !modelPlaced) {
         const refSpace = renderer.xr.getReferenceSpace();
-        const session = renderer.xr.getSession();
-
-        if (!hitTestSourceRequested) {
-          session
-            .requestReferenceSpace("viewer")
-            .then((viewerSpace) => {
-              session
-                .requestHitTestSource({ space: viewerSpace })
-                .then((source) => {
-                  hitTestSource = source;
-                });
-            })
-            .catch((err) => console.warn(err));
-          session.addEventListener("end", () => {
-            hitTestSourceRequested = false;
-            hitTestSource = null;
-          });
-          hitTestSourceRequested = true;
-        }
-
-        if (hitTestSource && refSpace && !modelPlaced) {
-          const results = frame.getHitTestResults(hitTestSource);
-          if (results.length > 0) {
-            const pose = results[0].getPose(refSpace);
-            if (pose) {
-              reticle.visible = true;
-              reticle.matrix.fromArray(pose.transform.matrix);
-            }
-          } else {
-            reticle.visible = false;
+        const s = renderer.xr.getSession();
+        if (refSpace && s) {
+          if (!hitTestSourceRequested) {
+            s.requestReferenceSpace("viewer").then((vs) => {
+              s.requestHitTestSource({ space: vs }).then((src) => (hitTestSource = src));
+            });
+            s.addEventListener("end", () => {
+              hitTestSourceRequested = false;
+              hitTestSource = null;
+            });
+            hitTestSourceRequested = true;
           }
-        } else if (modelPlaced) {
-          reticle.visible = false;
+          if (hitTestSource) {
+            const res = frame.getHitTestResults(hitTestSource);
+            if (res.length > 0) {
+              const pose = res[0].getPose(refSpace);
+              if (pose) {
+                reticle.visible = true;
+                reticle.matrix.fromArray(pose.transform.matrix);
+              }
+            } else {
+              reticle.visible = false;
+            }
+          }
         }
       }
       renderer.render(scene, camera);
