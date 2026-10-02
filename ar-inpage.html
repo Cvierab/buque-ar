@@ -1,0 +1,504 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Buque AR - ALMT BLANCO</title>
+  <meta name="theme-color" content="#000000" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    #webgl {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100dvh;
+      outline: none;
+    }
+
+    #ui {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    #startBtn {
+      position: absolute;
+      left: 50%;
+      bottom: clamp(24px, 6vw, 40px);
+      transform: translateX(-50%);
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(8px, 2vw, 10px);
+      padding: clamp(14px, 3.5vw, 18px) clamp(24px, 6vw, 40px);
+      border-radius: 999px;
+      border: none;
+      background: rgba(255, 255, 255, 0.98);
+      color: #111;
+      font-size: clamp(14px, 3.5vw, 17px);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      box-shadow: 0 20px 80px -30px rgba(255, 255, 255, 0.9),
+        0 10px 60px -20px rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px) saturate(140%);
+      transition: transform 0.2s ease, opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    #startBtn.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(8px);
+    }
+
+    #startBtn:active {
+      transform: translateX(-50%) scale(0.995);
+    }
+
+    #status {
+      position: absolute;
+      top: clamp(20px, 5vw, 32px);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: clamp(6px, 2vw, 10px) clamp(14px, 4vw, 18px);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.72);
+      color: #fff;
+      font-size: clamp(11px, 2.8vw, 13px);
+      text-align: center;
+      backdrop-filter: blur(10px) saturate(140%);
+      box-shadow: 0 10px 60px -30px rgba(0, 0, 0, 0.9);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      white-space: nowrap;
+      max-width: min(92vw, 90%);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #status.hidden {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-6px);
+      pointer-events: none;
+    }
+
+    #status.info {
+      background: rgba(0, 0, 0, 0.72);
+    }
+
+    #status.success {
+      background: rgba(34, 197, 94, 0.92);
+    }
+
+    #reticle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: clamp(70px, 18vw, 96px);
+      height: clamp(70px, 18vw, 96px);
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: clamp(2px, 0.8vw, 2.5px) solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 0 clamp(4px, 1.5vw, 6px) rgba(255, 255, 255, 0.15),
+        0 0 80px -30px rgba(255, 255, 255, 0.9);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    #reticle::before,
+    #reticle::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: clamp(10px, 3vw, 14px);
+      height: clamp(2px, 0.8vw, 2.5px);
+      background: rgba(255, 255, 255, 0.95);
+      transform: translate(-50%, -50%);
+    }
+
+    #reticle::after {
+      transform: translate(-50%, -50%) rotate(90deg);
+    }
+
+    #reticle.visible {
+      opacity: 1;
+    }
+
+    #reticle.hidden {
+      opacity: 0;
+    }
+
+    .dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: clamp(6px, 1.5vw, 8px);
+      height: clamp(6px, 1.5vw, 8px);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.98);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 clamp(3px, 1vw, 4px) rgba(255, 255, 255, 0.25);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        transform: translate(-50%, -50%) scale(0.9);
+        opacity: 0.9;
+      }
+
+      50% {
+        transform: translate(-50%, -50%) scale(1.15);
+        opacity: 1;
+      }
+    }
+
+    #hint {
+      position: absolute;
+      bottom: clamp(80px, 16vw, 120px);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: clamp(6px, 2vw, 8px) clamp(12px, 3.5vw, 16px);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.72);
+      color: rgba(255, 255, 255, 0.96);
+      font-size: clamp(10px, 2.5vw, 12px);
+      text-align: center;
+      backdrop-filter: blur(10px) saturate(140%);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      transform: translateX(-50%) translateY(6px);
+    }
+
+    #hint.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #hint.hidden {
+      opacity: 0;
+    }
+
+    #loader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(16px, 4vw, 20px);
+      background: #000;
+      z-index: 20;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: clamp(48px, 10vw, 64px);
+      height: clamp(48px, 10vw, 64px);
+      border-radius: 50%;
+      border: clamp(3px, 0.8vw, 4px) solid rgba(255, 255, 255, 0.15);
+      border-top-color: rgba(255, 255, 255, 0.98);
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #loaderText {
+      color: rgba(255, 255, 255, 0.96);
+      font-size: clamp(13px, 3.2vw, 15px);
+      text-align: center;
+      padding: 0 clamp(20px, 5vw, 32px);
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="webgl"></canvas>
+
+  <div id="ui">
+    <div id="status" class="info hidden"></div>
+    <div id="reticle">
+      <div class="dot"></div>
+    </div>
+    <div id="hint">Mueve el dispositivo para detectar superficies • Toca para colocar el buque</div>
+    <button id="startBtn" class="hidden">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink: 0">
+        <path
+          d="M3 4.5A1.5 1.5 0 014.5 3h3A1.5 1.5 0 019 4.5V5h6v-.5A1.5 1.5 0 0116.5 3h3A1.5 1.5 0 0121 4.5v3A1.5 1.5 0 0119.5 9H19v6h.5a1.5 1.5 0 011.5 1.5v3a1.5 1.5 0 01-1.5 1.5h-3a1.5 1.5 0 01-1.5-1.5V19H9v.5A1.5 1.5 0 017.5 21h-3A1.5 1.5 0 013 19.5v-3A1.5 1.5 0 014.5 15H5V9h-.5A1.5 1.5 0 013 7.5v-3zM5 7v2h2V7H5zm12 0v2h2V7h-2zM7 5H5v2h2V5zm10 0h-2v2h2V5zM5 15v2h2v-2H5zm12 0v2h2v-2h-2zm-8-4h6v6H9V9zm2 2v2h2v-2h-2z" />
+      </svg>
+      Comenzar en AR
+    </button>
+  </div>
+
+  <div id="loader">
+    <div class="spinner"></div>
+    <div id="loaderText">Cargando modelo...</div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+    const canvas = document.getElementById("webgl");
+    const loaderEl = document.getElementById("loader");
+    const loaderText = document.getElementById("loaderText");
+    const startBtn = document.getElementById("startBtn");
+    const statusEl = document.getElementById("status");
+    const reticleEl = document.getElementById("reticle");
+    const hintEl = document.getElementById("hint");
+
+    let scene, camera, renderer;
+    let model = null;
+    let reticle = null;
+    let hitTestSource = null;
+    let hitTestSourceRequested = false;
+    let isAR = false;
+    let modelPlaced = false;
+
+    const showStatus = (text, type = "info", timeout = 2600) => {
+      statusEl.textContent = text;
+      statusEl.className = `info ${type}`;
+      statusEl.classList.remove("hidden");
+      clearTimeout(showStatus._t);
+      showStatus._t = setTimeout(() => statusEl.classList.add("hidden"), timeout);
+    };
+
+    const init = () => {
+      scene = new THREE.Scene();
+
+      camera = new THREE.PerspectiveCamera(
+        70,
+        window.innerWidth / window.innerHeight,
+        0.01,
+        40
+      );
+
+      const hemi = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 3);
+      scene.add(hemi);
+
+      const dir = new THREE.DirectionalLight(0xffffff, 1.8);
+      dir.position.set(1, 3, 2);
+      scene.add(dir);
+
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.xr.enabled = true;
+      renderer.useLegacyLights = false;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.1;
+
+      const reticleGeo = new THREE.RingGeometry(0.14, 0.2, 32).rotateX(
+        -Math.PI / 2
+      );
+      const reticleMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.95,
+      });
+      reticle = new THREE.Mesh(reticleGeo, reticleMat);
+      reticle.matrixAutoUpdate = false;
+      reticle.visible = false;
+      scene.add(reticle);
+
+      const loader = new GLTFLoader();
+      loader.load(
+        "./ALMT_BLANCO.glb",
+        (gltf) => {
+          model = gltf.scene;
+          model.visible = false;
+          model.traverse((child) => {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+              if (child.material) {
+                child.material.metalness = 0.05;
+                child.material.roughness = 0.85;
+              }
+            }
+          });
+          scene.add(model);
+          loaderEl.classList.add("hidden");
+          startBtn.classList.remove("hidden");
+          showStatus("Modelo listo. Pulsa para iniciar AR", "info", 1800);
+        },
+        (xhr) => {
+          if (xhr.total > 0) {
+            const p = Math.round((xhr.loaded / xhr.total) * 100);
+            loaderText.textContent = `Cargando modelo... ${p}%`;
+          }
+        },
+        (err) => {
+          console.error(err);
+          loaderText.textContent =
+            "Error al cargar ALMT_BLANCO.glb. Asegúrate de que esté en la carpeta.";
+        }
+      );
+
+      renderer.xr.addEventListener("sessionstart", onSessionStart);
+      renderer.xr.addEventListener("sessionend", onSessionEnd);
+
+      canvas.addEventListener("click", onSelect, { passive: true });
+      window.addEventListener("resize", onResize);
+
+      renderer.setAnimationLoop(render);
+    };
+
+    const onSessionStart = () => {
+      isAR = true;
+      modelPlaced = false;
+      if (model) model.visible = false;
+      reticle.visible = false;
+      hitTestSourceRequested = false;
+      hitTestSource = null;
+      startBtn.classList.add("hidden");
+      reticleEl.classList.add("visible");
+      hintEl.classList.add("visible");
+      showStatus("Busca una superficie plana...", "info", 3200);
+    };
+
+    const onSessionEnd = () => {
+      isAR = false;
+      reticleEl.classList.remove("visible");
+      hintEl.classList.remove("visible");
+      if (model) model.visible = false;
+      reticle.visible = false;
+      startBtn.classList.remove("hidden");
+      showStatus("Sesión AR finalizada", "info", 1600);
+    };
+
+    const onSelect = () => {
+      if (isAR && reticle.visible && model && !modelPlaced) {
+        model.position.setFromMatrixPosition(reticle.matrix);
+        model.quaternion.setFromRotationMatrix(reticle.matrix);
+        const scale = 0.08;
+        model.scale.set(scale, scale, scale);
+        model.visible = true;
+        modelPlaced = true;
+        reticle.visible = false;
+        reticleEl.classList.remove("visible");
+        hintEl.classList.remove("visible");
+        showStatus("¡Buque colocado!", "success", 1800);
+      }
+    };
+
+    const onResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    const startAR = async () => {
+      if (!navigator.xr) {
+        showStatus("Tu navegador no soporta WebXR", "info", 2400);
+        return;
+      }
+      try {
+        const session = await navigator.xr.requestSession("immersive-ar", {
+          requiredFeatures: ["hit-test"],
+          optionalFeatures: ["dom-overlay"],
+          domOverlay: { root: document.getElementById("ui") },
+        });
+        renderer.xr.setReferenceSpaceType("local");
+        renderer.xr.setSession(session);
+      } catch (e) {
+        console.error(e);
+        showStatus("No se pudo iniciar AR en esta página", "info", 2800);
+      }
+    };
+
+    startBtn.addEventListener("click", startAR);
+
+    const render = (timestamp, frame) => {
+      if (isAR && frame) {
+        const refSpace = renderer.xr.getReferenceSpace();
+        const session = renderer.xr.getSession();
+
+        if (!hitTestSourceRequested) {
+          session
+            .requestReferenceSpace("viewer")
+            .then((viewerSpace) => {
+              session
+                .requestHitTestSource({ space: viewerSpace })
+                .then((source) => {
+                  hitTestSource = source;
+                });
+            })
+            .catch((err) => console.warn(err));
+          session.addEventListener("end", () => {
+            hitTestSourceRequested = false;
+            hitTestSource = null;
+          });
+          hitTestSourceRequested = true;
+        }
+
+        if (hitTestSource && refSpace && !modelPlaced) {
+          const results = frame.getHitTestResults(hitTestSource);
+          if (results.length > 0) {
+            const pose = results[0].getPose(refSpace);
+            if (pose) {
+              reticle.visible = true;
+              reticle.matrix.fromArray(pose.transform.matrix);
+            }
+          } else {
+            reticle.visible = false;
+          }
+        } else if (modelPlaced) {
+          reticle.visible = false;
+        }
+      }
+      renderer.render(scene, camera);
+    };
+
+    init();
+  </script>
+</body>
+
+</html>

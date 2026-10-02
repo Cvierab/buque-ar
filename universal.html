@@ -1,0 +1,356 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buque ALMT BLANCO - Realidad Aumentada</title>
+  <meta name="description"
+    content="Visualiza el buque ALMT BLANCO en 3D y Realidad Aumentada. Compatible con Android, iOS, tablets y ordenadores." />
+  <link rel="canonical" href="https://cvierab.github.io/buque-ar/universal.html" />
+  <meta property="og:title" content="Buque ALMT BLANCO - AR" />
+  <meta property="og:description" content="Escanea este QR para ver el buque en Realidad Aumentada" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://cvierab.github.io/buque-ar/universal.html" />
+  <meta name="theme-color" content="#0f172a" />
+
+  <script type="module" src="https://unpkg.com/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0f7bff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+        sans-serif;
+      background: radial-gradient(ellipse at top, #0f172a 0%, #020617 100%);
+      color: #ffffff;
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      padding: clamp(16px, 4vw, 24px) clamp(16px, 4vw, 20px) 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: clamp(4px, 1.5vw, 8px);
+      background: linear-gradient(
+        to bottom,
+        rgba(2, 6, 23, 0.96) 0%,
+        rgba(2, 6, 23, 0.7) 60%,
+        rgba(2, 6, 23, 0) 100%
+      );
+      pointer-events: none;
+    }
+
+    h1 {
+      font-size: clamp(18px, 4.5vw, 28px);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      text-shadow: 0 10px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .subtitle {
+      font-size: clamp(12px, 2.8vw, 15px);
+      color: rgba(255, 255, 255, 0.88);
+      max-width: min(88vw, 440px);
+      line-height: 1.5;
+    }
+
+    .viewer-container {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: 100dvh;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      --poster-color: transparent;
+      --progress-bar-color: var(--primary);
+      --progress-bar-height: 3px;
+    }
+
+    .hint {
+      position: absolute;
+      bottom: clamp(88px, 14vw, 132px);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: clamp(6px, 2vw, 10px) clamp(12px, 3.5vw, 16px);
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(10px) saturate(140%);
+      box-shadow: 0 20px 80px -30px rgba(15, 123, 255, 0.9);
+      font-size: clamp(10px, 2.2vw, 13px);
+      color: rgba(255, 255, 255, 0.96);
+      text-align: center;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      transform: translateX(-50%) translateY(6px);
+    }
+
+    .hint.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .ar-button-wrapper {
+      position: absolute;
+      bottom: clamp(20px, 5vw, 32px);
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      padding: 0 clamp(16px, 4vw, 20px);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    #ar-button {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(8px, 2vw, 10px);
+      padding: clamp(13px, 3.2vw, 16px) clamp(22px, 5.5vw, 34px);
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #0f7bff 0%, #4da0ff 100%);
+      color: #ffffff;
+      font-size: clamp(14px, 3.5vw, 17px);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      box-shadow: 0 24px 90px -30px rgba(15, 123, 255, 1),
+        0 10px 60px -30px rgba(15, 123, 255, 0.95);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      white-space: nowrap;
+      backdrop-filter: blur(8px) saturate(140%);
+    }
+
+    #ar-button.hidden {
+      display: none;
+    }
+
+    #ar-button:active {
+      transform: scale(0.995);
+    }
+
+    #ar-button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .ar-icon {
+      width: clamp(20px, 4vw, 24px);
+      height: clamp(20px, 4vw, 24px);
+    }
+
+    .loader {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(16px, 3.5vw, 20px);
+      background: radial-gradient(
+        ellipse at center,
+        rgba(2, 6, 23, 0.94) 0%,
+        rgba(2, 6, 23, 0.98) 100%
+      );
+      z-index: 20;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+      padding: 0 clamp(20px, 5vw, 24px);
+      text-align: center;
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .ring {
+      width: clamp(44px, 9vw, 60px);
+      height: clamp(44px, 9vw, 60px);
+      border-radius: 50%;
+      border: clamp(3px, 0.8vw, 4px) solid rgba(255, 255, 255, 0.12);
+      border-top-color: var(--primary);
+      animation: spin 1s linear infinite;
+      box-shadow: 0 20px 80px -40px rgba(15, 123, 255, 0.95);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loader-text {
+      font-size: clamp(13px, 3vw, 16px);
+      color: rgba(255, 255, 255, 0.96);
+      max-width: min(80vw, 320px);
+      line-height: 1.5;
+    }
+
+    .progress {
+      width: min(64vw, 240px);
+      height: clamp(3px, 0.8vw, 4px);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #0f7bff 0%, #4da0ff 100%);
+      transition: width 0.25s ease;
+      border-radius: 999px;
+    }
+
+    @media (hover: hover) {
+      #ar-button:hover {
+        transform: translateY(-1px) scale(1.01);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Buque ALMT BLANCO</h1>
+    <p class="subtitle">
+      Visualízalo en 3D o colócalo en Realidad Aumentada desde cualquier
+      dispositivo
+    </p>
+  </header>
+
+  <div class="viewer-container">
+    <model-viewer id="viewer" src="./ALMT_BLANCO.glb" ar ar-modes="scene-viewer quick-look webxr"
+      ar-scale="auto" camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="3500"
+      rotation-per-second="14deg" shadow-intensity="0.9" exposure="1.05" environment-image="neutral"
+      loading="eager" reveal="auto" alt="Modelo 3D del buque ALMT BLANCO">
+    </model-viewer>
+
+    <div class="hint" id="touchHint">
+      Arrastra para rotar • Pellizca para ampliar • Toca para mover
+    </div>
+    <div class="hint" id="arHint">Mueve el dispositivo y toca para colocar el buque</div>
+  </div>
+
+  <div class="ar-button-wrapper">
+    <button id="ar-button" class="hidden">
+      <svg class="ar-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M3 4.5A1.5 1.5 0 014.5 3h3A1.5 1.5 0 019 4.5V5h6v-.5A1.5 1.5 0 0116.5 3h3A1.5 1.5 0 0121 4.5v3A1.5 1.5 0 0119.5 9H19v6h.5a1.5 1.5 0 011.5 1.5v3a1.5 1.5 0 01-1.5 1.5h-3a1.5 1.5 0 01-1.5-1.5V19H9v.5A1.5 1.5 0 017.5 21h-3A1.5 1.5 0 013 19.5v-3A1.5 1.5 0 014.5 15H5V9h-.5A1.5 1.5 0 013 7.5v-3zM5 7v2h2V7H5zm12 0v2h2V7h-2zM7 5H5v2h2V5zm10 0h-2v2h2V5zM5 15v2h2v-2H5zm12 0v2h2v-2h-2zm-8-4h6v6H9V9zm2 2v2h2v-2h-2z" />
+      </svg>
+      Ver en Realidad Aumentada
+    </button>
+  </div>
+
+  <div class="loader" id="loader">
+    <div class="ring"></div>
+    <div class="loader-text" id="loaderText">Cargando modelo del buque...</div>
+    <div class="progress">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <script>
+    const viewer = document.getElementById("viewer");
+    const arBtn = document.getElementById("ar-button");
+    const loader = document.getElementById("loader");
+    const loaderText = document.getElementById("loaderText");
+    const progressFill = document.getElementById("progressFill");
+    const touchHint = document.getElementById("touchHint");
+    const arHint = document.getElementById("arHint");
+    let arActive = false;
+    let hintTimer;
+
+    viewer.addEventListener("load", () => {
+      setTimeout(() => {
+        loader.classList.add("hidden");
+        touchHint.classList.add("visible");
+        clearTimeout(hintTimer);
+        hintTimer = setTimeout(() => touchHint.classList.remove("visible"), 3500);
+      }, 250);
+    });
+
+    viewer.addEventListener("progress", (e) => {
+      if (e.detail.totalProgress >= 0) {
+        const p = Math.round(e.detail.totalProgress * 100);
+        progressFill.style.width = p + "%";
+        loaderText.textContent =
+          p < 100 ? `Cargando modelo... ${p}%` : "Preparando visor...";
+      }
+    });
+
+    viewer.addEventListener("ar-status", (e) => {
+      if (e.detail.status === "session-started") {
+        arActive = true;
+        touchHint.classList.remove("visible");
+        arHint.classList.add("visible");
+        setTimeout(() => arHint.classList.remove("visible"), 3200);
+      } else if (e.detail.status === "session-ended") {
+        arActive = false;
+        if (!loader.classList.contains("hidden")) return;
+        touchHint.classList.add("visible");
+        clearTimeout(hintTimer);
+        hintTimer = setTimeout(() => touchHint.classList.remove("visible"), 2500);
+      }
+    });
+
+    const checkAR = () => {
+      if (viewer.canActivateAR) {
+        arBtn.classList.remove("hidden");
+      } else {
+        arBtn.classList.add("hidden");
+      }
+    };
+
+    viewer.addEventListener("ar-availability", checkAR);
+    setTimeout(checkAR, 800);
+
+    arBtn.addEventListener("click", () => {
+      if (viewer.canActivateAR) viewer.activateAR();
+    });
+
+    viewer.addEventListener("camera-change", () => {
+      if (!arActive && loader.classList.contains("hidden")) {
+        touchHint.classList.add("visible");
+        clearTimeout(hintTimer);
+        hintTimer = setTimeout(() => touchHint.classList.remove("visible"), 2200);
+      }
+    });
+  </script>
+</body>
+
+</html>
